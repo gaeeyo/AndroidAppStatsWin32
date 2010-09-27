@@ -6,14 +6,25 @@ IEを利用しているのでWindows必須。
 開発環境は Windows 7, IE8, PHP 5.2.14。
 
 
-使いかた。
+使い方1
 
   php sample.php <e-mail> <password>
 
 
-結果。
+結果1
 
                packageName  versionCode  version  active  total   *5   *4  *3  *2  *1
  com.example.android.hello            2        0       5     11    0    0   0   0   0
 com.example.android.hello2            3        0       4     11    0    1   1   0   0
+
+
+使い方2
+
+  php sqlite.php <e-mail> <password>
+
+結果2
+
+  stat.sqlite にデータが出力される。
+  データ登録後、またはパラメータ無しで起動したら、
+  直近7日分のデータを出力。
 
