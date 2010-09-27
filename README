@@ -1,0 +1,10 @@
+
+Android の Developer Console の情報を取得するツール。
+JScript で作ったあと、phpで作り直した。
+jscript ディレクトリの中身はなかったことに...。
+
+
+使いかた。
+
+  php sample.php <e-mail> <password>
+
