@@ -1,17 +1,17 @@
 
-Android �� Developer Console �̏����擾����c�[���B
-�������A���Ȃ̂ł����ɓ����Ȃ��Ȃ�\����B
+Android の Developer Console の情報を取得するツール。
+やり方がアレなのですぐに動かなくなる可能盛大。
 
-IE�𗘗p���Ă���̂�Windows�K�{�B
-�J������ Windows 7, IE8, PHP 5.2.14�B
+IEを利用しているのでWindows必須。
+開発環境は Windows 7, IE8, PHP 5.2.14。
 
 
-�g�������B
+使いかた。
 
   php sample.php <e-mail> <password>
 
 
-���ʁB
+結果。
 
                packageName  versionCode  version  active  total   *5   *4  *3  *2  *1
  com.example.android.hello            2        0       5     11    0    0   0   0   0
