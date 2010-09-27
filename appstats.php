@@ -6,7 +6,7 @@ define('INSERT_SCRIPT_PATH', 'browser_script.js');
 
 function getStats($email, $pass) {
   $apps = null;
-  $ie = new COM('InternetExplorer.Application');
+  $ie = new COM('InternetExplorer.Application', null, CP_UTF8);
 	
   $ie->Navigate(MAIN_URL);
 	$ie->Visible = true;
@@ -67,12 +67,9 @@ function login($ie, $email, $pass) {
 function insertScript($ie) {
 	sleep(2);
 	echo "Insert script\n";
-	$script = file_get_contents(INSERT_SCRIPT_PATH);
 	
 	$scriptTag = $ie->Document->createElement('script');
-	// ‚Ç‚¤‚àphp.exe‚ªUnicode‚¶‚á‚È‚¢‚Á‚Û‚¢‚Ì‚ÅA
-	// CP932(’†g‚ÍUTF-8)->Unicode ‚Ì•ÏŠ·‚ª”­¶‚µ‚Ä‚µ‚Ü‚¤‚æ‚¤‚È‚Ì‚Å
-	$scriptTag->text = mb_convert_encoding($script, 'CP932', 'UTF-8');
+	$scriptTag->text = file_get_contents(INSERT_SCRIPT_PATH);
 
 	$ie->Document->body->appendChild($scriptTag);
 }
