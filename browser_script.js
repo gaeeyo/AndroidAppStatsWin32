@@ -226,7 +226,7 @@ function stats() {
 				text = text.replace(/(\d) stars/ig, '$1 stars ');
 				_console.info(text);
 				
-				app.version = text.match(/VersionName:\s*(\S+?)/)[1];
+				app.version = text.match(/VersionName:\s*(\S+)/)[1];
 				app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
 				_console.info(app.packageName + " " + app.versionCode);
 				var m = text.match(/5 stars (\d+)4 stars (\d+)3 stars (\d+)2 stars (\d+)1 stars (\d+)/);
