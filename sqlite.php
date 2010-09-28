@@ -27,6 +27,7 @@ function main($argv) {
   $db = new StatsDatabase();
   foreach ($apps as $app) {
     $db->insertApp($app);
+    $db->insertComments($app);
   }
   showSummary();
 }
@@ -38,9 +39,6 @@ function showSummary() {
   $dates = $db->getLastDate(7);
 
   // 7日分の範囲に存在するパッケージ名の配列を取得
-  $wheres = array(
-    
-  );
   $packageNames = $db->getPackageNames($db->whereIn('date', $dates));
   
   
@@ -122,16 +120,8 @@ function showSummary() {
       }
       echo "\n";
     }
-    //var_dump($columnWidth);
-    //var_dump($values);
-    //die();
     echo "\n";
   }
-  //var_dump($packageNames);
-  //$db->query('SELECT DISTINCT packageName FROM stats WHERE DESC > 
-  
-  //$stmt = $db->query('SELECT DISTINCT date FROM stats ORDER BY date DESC LIMIT 7');
-  //$f = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 class StatsDatabase
@@ -173,6 +163,20 @@ class StatsDatabase
          );
 END_OF_SQL;
       $db->query($sql);
+      
+      $sql = <<<END_OF_SQL
+        CREATE TABLE IF NOT EXISTS comments (
+          _id INTEGER PRIMARY KEY AUTOINCREMENT,
+          date TEXT NOT NULL,
+          packageName TEXT NOT NULL,
+          name TEXT NOT NULL,
+          body TEXT NOT NULL,
+          star INTEGER NOT NULL,
+          UNIQUE (date, packageName, name, body)
+          );
+END_OF_SQL;
+      $db->query($sql);
+      
     }
     
     return self::$db;
@@ -201,6 +205,30 @@ END_OF_SQL;
       ':star4' => $stars[3],
       ':star5' => $stars[4]
     ));
+  }
+  
+  public function insertComments($app) {
+    $db = $this->getInstance();
+    $stmt = $db->prepare('INSERT OR IGNORE INTO comments('
+      .'date, packageName, name, body, star)'
+      .' VALUES('
+      .':date,:packageName,:name,:body,:star)');
+    
+    foreach ($app['comments'] as $c) {
+      $result = $stmt->execute(array(
+        ':date' => $c['date'],
+        ':packageName' => $app['packageName'],
+        ':name' => $c['name'],
+        ':body' => $c['body'],
+        ':star' => $c['star']
+      ));
+      if ($stmt->rowCount() > 0) {
+        printf("[%s] by %s (%s)\n %s\n\n",
+          $app['packageName'], $c['name'], $c['date'],
+          $c['body']);
+      }
+      //var_dump($result);
+    }
   }
   
   public function getLastDate($count) {
