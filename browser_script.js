@@ -1,4 +1,8 @@
-/*!
+
+var COMMENT_PAGE_MAX = 1;
+
+
+/*
  * jQuery JavaScript Library v1.4.2
  * http://jquery.com/
  *
@@ -153,6 +157,8 @@ f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){fo
 "pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
 e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
 
+// '
+
 $=jQuery;
 if (typeof(_console) == 'undefined') {
 	if (typeof(console) != 'undefined') {
@@ -163,9 +169,8 @@ if (typeof(_console) == 'undefined') {
 		};
 	}
 }
-_console = {
-	info: function (e) {}
-};
+
+window.apps = null;
 
 function stats() {
 	var apps = [];
@@ -192,59 +197,121 @@ function stats() {
 		return;
 	}
 
-	// 順番に処理していくためのqueue
-	var queue = apps.slice(0);
-
-	function queueNext() {
-		if (queue.length == 0) {
+	var cursor = 0;
+	var step = 0;
+	var app = null;
+	var commentPage = null;
+	function loop() {
+		if (cursor >= apps.length) {
 			_console.info('finished');
 			window.apps = apps;
-			return;
+			return;	// 終了
 		}
-		var app = queue.pop();
-		_console.info(app.title);
 		
-		window.location.href = '#COMMENTS?pkg=' + app.packageName;
-		var retryDelay = 250;
-		var retryMax = 10*1000 / retryDelay;	// 最大15秒待つ
+		switch (step) {
+		case 0:
+			app = apps[cursor];
+			app.comments = [];
+			commentPage = 0;
+			window.location.href = '#COMMENTS?pkg=' + app.packageName;
+			step++;
+			break;
+		case 1:
+			var icon = $('.GD423GFBCI img')[0].src;
 		
-		window.setTimeout(function(){
-			var icon = $('.GD423GFBCI img')[0].src
-			if (app.icon != icon) {
-				if (--retryMax > 0) {
-					_console.info(app.title + ": time out");
-					window.setTimeout(arguments.callee, retryDelay);
-				} else {
-					queueNext();
+			if (app.icon != icon) break;
+			if (!isCommentsLoaded()) break;
+			
+			getComments(app.comments);
+			if (++commentPage < COMMENT_PAGE_MAX) {	// 最大3ページ分のコメントをとってくる
+				if (getNextComments()) {	// 次のページがあればtrue
+					break;
 				}
-			} else {
-				var text = $('.GD423GFBCI').text();
-				_console.info(text);
-				
-				// IEだとtext()でタグとタグの間に空白が入らないので対策
-				text = text.replace('VersionCode', ' VersionCode');
-				text = text.replace(/(\d) stars/ig, '$1 stars ');
-				_console.info(text);
-				
-				app.version = text.match(/VersionName:\s*(\S+)/)[1];
-				app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
-				_console.info(app.packageName + " " + app.versionCode);
-				var m = text.match(/5 stars (\d+)4 stars (\d+)3 stars (\d+)2 stars (\d+)1 stars (\d+)/);
-				app.stars = [m[5], m[4], m[3], m[2], m[1]];
-				
-				_console.info(app.toString());
-				if (typeof(_console.app) != 'undefined') {
-					//_console.app(
-					//	app.packageName, app.versionCode, app.version, 
-					//	app.total, app.active, 
-					//	app.stars);
-				}
-				queueNext();
 			}
-		}, retryDelay);
-	}
 
-	queueNext();
+			var text = $('.GD423GFBCI').text();
+			
+			// IEだとtext()でタグとタグの間に空白が入らないので対策
+			text = text.replace('VersionCode', ' VersionCode');
+			text = text.replace(/(\d) stars/ig, '$1 stars ');
+			
+			app.version = text.match(/VersionName:\s*(\S+)/)[1];
+			app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
+			text = text.replace(/ +/g, ' ');
+			var m = text.match(/5 stars (\d+)4 stars (\d+)3 stars (\d+)2 stars (\d+)1 stars (\d+)/);
+			app.stars = [m[5], m[4], m[3], m[2], m[1]];
+    
+			step = 0;
+			cursor++;
+			break;
+		}
+		window.setTimeout(loop, 100);
+	}
+	window.setTimeout(loop, 250);
+}
+
+// 続きがあるときは true を返す
+function getComments(comments) {
+
+	$('.GD423GFBAI > div').each(function(){
+		var comment = {
+			body: $('.GD423GFBAG', this).text(),
+			name: '',
+			date: '',
+			star: ''
+		};
+		$('span', this).each(function(){
+			var text = $(this).text();
+			var m = text.match(/by (.*) \((.+?)\)/);
+			if (m != null) {
+				comment.name = m[1];
+				comment.date = m[2];
+				return false;
+			}
+			m = this.title.match(/(\d) star/);
+			if (m != null) {
+				comment.star = m[1];
+			}
+		});
+
+		//_console.info(comment);
+		comments.push(comment);
+	});
+	
+	// すでに取得したコメントと「コメントはありません」を隠す
+	// (isCommentsLoaded()で見つからないように隠している)
+	$('.GD423GFBAI > div').hide();
+	$('.listingRow .nolisting').hide();
+	
+}
+
+// コメントの次のページへのリンクを探して、あればクリックしてtrueを返す
+function getNextComments() {
+	var nextLink = null;
+	$('a.GD423GFBMI:visible').each(function(){
+		if (this.style.visibility != 'hidden') {	// なぜか上の:visibleが効かない...
+			if ($(this).text().match(/Next/)) {
+				nextLink = this;
+			} 
+		}
+	});
+
+	if (nextLink != null) {
+		nextLink.click();
+		return true;
+	}
+	return false;
+}
+
+// コメントの読み込みが完了しているかどうかを返す
+function isCommentsLoaded() {
+	if ($('.listingRow .nolisting:visible').length == 1 ||
+		$('.GD423GFBAI > div:visible').length >= 1) {
+		_console.info('comments loaded.');
+		return true;
+	}
+	_console.info('comments loading...');
+	return false;
 }
 
 stats();
