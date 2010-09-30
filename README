@@ -1,30 +1,25 @@
 
-Android の Developer Console の情報を取得するツール。
-やり方がアレなのですぐに動かなくなる可能盛大。
+Android の Developer Console に表示される情報を取得するツール。
+実装方法がアレなのですぐに動かなくなる可能盛大。
 
-IEを利用しているのでWindows必須。
-開発環境は Windows 7, IE8, PHP 5.2.14。
+以下のデータをsqliteデータベースに蓄積できます。
 
-
-使い方1
-
-  php sample.php <e-mail> <password>
-
-
-結果1
-
-               packageName  versionCode  version  active  total   *5   *4  *3  *2  *1
- com.example.android.hello            2        0       5     11    0    0   0   0   0
-com.example.android.hello2            3        0       4     11    0    1   1   0   0
+・ダウンロード数(Total)
+・アクティブ数(Active)
+・星の数(5つ星がいくつ、など)
+・バージョンコード
+・バージョン
+・レビューの投稿者名、コメント本文、星の数、日付
 
 
-使い方2
+実行に必要なもの。
 
-  php sqlite.php <e-mail> <password>
+・Windows 7(XPやVistaでも動くかも)
+・Internet Explorer 8(IE6でも動くかも。Vista+IE7やIE9betaは×)
+・PHP 5(mbstring,pdo,pdo_sqlite)
 
-結果2
 
-  stat.sqlite にデータが出力される。
-  データ登録後、またはパラメータ無しで起動したら、
-  直近7日分のデータを出力。
+使い方は以下のサイトにまとめて更新しているのでどうぞ。
+
+  http://sites.google.com/site/nikenonomonooki/androidappstatswin32
 
