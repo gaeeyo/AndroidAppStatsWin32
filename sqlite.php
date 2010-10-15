@@ -29,25 +29,29 @@ function main($argv) {
     $db->insertApp($app);
     $db->insertComments($app);
   }
+  
   showSummary();
 }
 
 function showSummary() {
+  // 7日分のデータを取得
+  $days = 7;
+  
   $db = new StatsDatabase();
   
   // 最新の7日分の日付の配列を取得
-  $dates = $db->getLastDate(7);
+  $dates = $db->getLastDate($days);
 
   // 7日分の範囲に存在するパッケージ名の配列を取得
   $packageNames = $db->getPackageNames($db->whereIn('date', $dates));
   
   
   $columns = array(
-    'date', 'versionCode', '+v', 'version', 'total', '+t', 'active', '+a', '%', '**', '+**', 
+    'date', 'versionCode', '+v', 'version', 'total', '+t', 'active', '+a', '%', '**',
     'star5', '+5', 'star4', '+4', 'star3', '+3', 'star2', '+2', 'star1', '+1'
   );
   $columnNames = array(
-    'Date', 'VerCode', '', 'Ver', 'Total', '', 'Active', '', '%', 'Stars', '',
+    'Date', 'VerCode', '', 'Ver', 'Total', '', 'Active', '', '%', '*(avg)',
     '*5', '', '*4', '', '*3', '', '*2', '', '*1', ''
   );
   $diffColumns = array();
@@ -68,11 +72,14 @@ function showSummary() {
     // 表示用のデータに整形
     foreach ($rows as $idx => &$row) {
       if ($row['total'] > 0) {
-        $row['%'] = sprintf('%.2f', $row['active'] / $row['total']);
+        $row['%'] = sprintf('%2.1f', $row['active'] * 100/ $row['total']);
       } else {
         $row['%'] = 1;
       }
-      $row['**'] = $row['star1'] + $row['star2'] + $row['star3'] + $row['star4'] + $row['star5'];
+      $row['**'] = sprintf('%1.2f',
+        ($row['star5']*5 + $row['star4']*4 + $row['star3']*3 + $row['star2']*2 + $row['star1']) /
+        ($row['star1'] + $row['star2'] + $row['star3'] + $row['star4'] + $row['star5'])
+        );
     }
     unset($row);
 
@@ -122,6 +129,19 @@ function showSummary() {
     }
     echo "\n";
   }
+  
+  $comments = $db->getRecentComments($days);
+  foreach ($comments as $c) {
+    printComment($c, $c['packageName']);
+  }
+}
+
+function printComment($c, $package) {
+  printf("%s (%s) %s [%s]\n %s\n\n",
+    $c['name'], $c['date'], 
+    preg_replace('/☆/u', '★', '☆☆☆☆☆', $c['star']),
+    $package,
+    $c['body']);
 }
 
 class StatsDatabase
@@ -207,6 +227,17 @@ END_OF_SQL;
     ));
   }
   
+  public function getRecentComments($days) {
+    $db = $this->getInstance();
+    $stmt = $db->prepare(
+      'SELECT * FROM comments WHERE date>=:date '
+      .' ORDER BY date DESC, _id DESC');
+    $stmt->execute(array(
+      ':date' => date('Y-m-d', time()-$days*24*60*60)
+    ));
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+  
   public function insertComments($app) {
     $db = $this->getInstance();
     $stmt = $db->prepare('INSERT OR IGNORE INTO comments('
@@ -223,9 +254,7 @@ END_OF_SQL;
         ':star' => $c['star']
       ));
       if ($stmt->rowCount() > 0) {
-        printf("[%s] by %s (%s)\n %s\n\n",
-          $app['packageName'], $c['name'], $c['date'],
-          $c['body']);
+        printComment($c, $app['packageName']);
       }
       //var_dump($result);
     }
