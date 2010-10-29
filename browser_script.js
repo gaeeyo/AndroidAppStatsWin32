@@ -171,7 +171,8 @@ if (typeof(_console) == 'undefined') {
 }
 
 window.apps = null;
-
+var SELECTOR_APP_BOX = '.GC5SFHDBJ:first';
+var SELECTOR_COMMENTS = '.GC5SFHDAJ > div';
 function stats() {
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
@@ -217,7 +218,8 @@ function stats() {
 			step++;
 			break;
 		case 1:
-			var icon = $('.GD423GFBPI img')[0].src;
+			var appBox = $(SELECTOR_APP_BOX);
+			var icon = $('img',appBox)[0].src;
 		
 			if (app.icon != icon) break;
 			if (!isCommentsLoaded()) break;
@@ -229,7 +231,7 @@ function stats() {
 				}
 			}
 
-			var text = $('.GD423GFBPI').text();
+			var text = appBox.text();
 			
 			// IEだとtext()でタグとタグの間に空白が入らないので対策
 			text = text.replace('VersionCode', ' VersionCode');
@@ -253,9 +255,10 @@ function stats() {
 // 続きがあるときは true を返す
 function getComments(comments) {
 
-	$('.GD423GFBNI > div').each(function(){
+	var commentElements = $(SELECTOR_COMMENTS);
+	commentElements.each(function(){
 		var comment = {
-			body: $('.GD423GFBNG', this).text(),
+			body: $('p', this).text(),
 			name: '',
 			date: '',
 			star: ''
@@ -265,7 +268,7 @@ function getComments(comments) {
 		comment.name = m[1];
 		comment.date = m[2];
 
-		m = $('span.GD423GFBJG')[0].title.match(/(\d) star/);
+		m = $('span:first',this)[0].title.match(/(\d) star/);
 		comment.star = m[1];
 
 		//_console.info(comment);
@@ -274,7 +277,7 @@ function getComments(comments) {
 	
 	// すでに取得したコメントと「コメントはありません」を隠す
 	// (isCommentsLoaded()で見つからないように隠している)
-	$('.GD423GFBNI > div').hide();
+	commentElements.hide();
 	$('.listingRow .nolisting').hide();
 	
 }
@@ -282,7 +285,7 @@ function getComments(comments) {
 // コメントの次のページへのリンクを探して、あればクリックしてtrueを返す
 function getNextComments() {
 	var nextLink = null;
-	$('a.GD423GFBDJ:visible').each(function(){
+	$('a.gwt-Anchor:visible').each(function(){
 		if (this.style.visibility != 'hidden') {	// なぜか上の:visibleが効かない...
 			if ($(this).text().match(/Next/)) {
 				nextLink = this;
@@ -300,7 +303,7 @@ function getNextComments() {
 // コメントの読み込みが完了しているかどうかを返す
 function isCommentsLoaded() {
 	if ($('.listingRow .nolisting:visible').length == 1 ||
-		$('.GD423GFBNI > div:visible').length >= 1) {
+		$(SELECTOR_COMMENTS+':visible').length >= 1) {
 		_console.info('comments loaded.');
 		return true;
 	}
