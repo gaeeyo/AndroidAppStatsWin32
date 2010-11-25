@@ -2,7 +2,12 @@
 
 define('MAIN_URL', 'http://market.android.com/publish/Home');
 define('LOGIN_URL', 'https://www.google.com/accounts/ServiceLogin');
-define('INSERT_SCRIPT_PATH', 'browser_script.js');
+
+// ブラウザに送り込むスクリプト
+// define('INSERT_SCRIPT_PATH', 'browser_script.js');
+
+// ブラウザに送り込むスクリプトを常にGitHubから取得する
+define('INSERT_SCRIPT_PATH', 'http://github.com/gaeeyo/AndroidAppStatsWin32/raw/master/browser_script.js');
 
 function getStats($email, $pass) {
   $apps = null;
