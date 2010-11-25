@@ -267,7 +267,7 @@ function getComments(comments) {
 		comment.name = m[1];
 		comment.date = m[2];
 
-		comment.date = comment.date.replace(/[年月]/, '-');
+		comment.date = comment.date.replace(/[年月]/g, '-').replace('日','');
 
 		m = $('span:first',this)[0].title.match(/(\d) つ星/);
 		comment.star = m[1];
