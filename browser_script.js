@@ -171,8 +171,8 @@ if (typeof(_console) == 'undefined') {
 }
 
 window.apps = null;
-var SELECTOR_APP_BOX = '.GC5SFHDBJ:first';
-var SELECTOR_COMMENTS = '.GC5SFHDAJ > div';
+var SELECTOR_APP_BOX = '.GF0N5BMDJJ:first';
+var SELECTOR_COMMENTS = '.GF0N5BMDIJ > div';
 function stats() {
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
@@ -184,8 +184,8 @@ function stats() {
 
 		var text = $(this).text();
 		_console.info(text);
-		app.total = text.match(/\s*(\d+)\s*total/)[1];
-		app.active = text.match(/\s*(\d+)\s*active/)[1];
+		app.total = text.match(/合計.*?(\d+)\s*/)[1];
+		app.active = text.match(/インストール数.*?(\d+)/)[1];
 		
 		app.icon = $(this).find('img')[0].src;
 
@@ -232,7 +232,6 @@ function stats() {
 			}
 
 			var text = appBox.text();
-			
 			// IEだとtext()でタグとタグの間に空白が入らないので対策
 			text = text.replace('VersionCode', ' VersionCode');
 			text = text.replace(/(\d) stars/ig, '$1 stars ');
@@ -240,7 +239,7 @@ function stats() {
 			app.version = text.match(/VersionName:\s*(\S+)/)[1];
 			app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
 			text = text.replace(/ +/g, ' ');
-			var m = text.match(/5 stars (\d+)4 stars (\d+)3 stars (\d+)2 stars (\d+)1 stars (\d+)/);
+			var m = text.match(/5 つ星(\d+)4 つ星(\d+)3 つ星(\d+)2 つ星(\d+)1 つ星(\d+)/);
 			app.stars = [m[5], m[4], m[3], m[2], m[1]];
     
 			step = 0;
@@ -264,13 +263,15 @@ function getComments(comments) {
 			star: ''
 		};
 		var text = $('span',this).text();
-		var m = text.match(/by (.*) \((.+?)\)/);
+		var m = text.match(/投稿者: (.*)（(.+?)\）/);
 		comment.name = m[1];
 		comment.date = m[2];
 
-		m = $('span:first',this)[0].title.match(/(\d) star/);
-		comment.star = m[1];
+		comment.date = comment.date.replace(/[年月]/, '-');
 
+		m = $('span:first',this)[0].title.match(/(\d) つ星/);
+		comment.star = m[1];
+		
 		//_console.info(comment);
 		comments.push(comment);
 	});
