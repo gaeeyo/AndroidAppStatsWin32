@@ -76,10 +76,15 @@ function showSummary() {
       } else {
         $row['%'] = 1;
       }
-      $row['**'] = sprintf('%1.2f',
-        ($row['star5']*5 + $row['star4']*4 + $row['star3']*3 + $row['star2']*2 + $row['star1']) /
-        ($row['star1'] + $row['star2'] + $row['star3'] + $row['star4'] + $row['star5'])
-        );
+      $starTotal = $row['star1'] + $row['star2'] + $row['star3'] + $row['star4'] + $row['star5'];
+      $starAvg = 0;
+      if ($starTotal != 0) {
+        $starAvg = (
+            $row['star5']*5 + $row['star4']*4 + $row['star3']*3
+            + $row['star2']*2 + $row['star1']
+          ) / $starTotal;
+      }
+      $row['**'] = sprintf('%1.2f', $starAvg);
     }
     unset($row);
 
