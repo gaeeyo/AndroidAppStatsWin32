@@ -1,5 +1,5 @@
 
-var COMMENT_PAGE_MAX = 1;
+var COMMENT_PAGE_MAX = 3;
 
 
 /*
@@ -171,8 +171,8 @@ if (typeof(_console) == 'undefined') {
 }
 
 window.apps = null;
-var SELECTOR_APP_BOX = '.GF0N5BMDJJ:first';
-var SELECTOR_COMMENTS = '.GF0N5BMDIJ > div';
+var SELECTOR_APP_BOX = '.GFW0W1RBOJ:first';
+var SELECTOR_COMMENTS = '.GFW0W1RBNJ > div';
 function stats() {
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
@@ -279,7 +279,7 @@ function getComments(comments) {
 	// すでに取得したコメントと「コメントはありません」を隠す
 	// (isCommentsLoaded()で見つからないように隠している)
 	commentElements.hide();
-	$('.listingRow .nolisting').hide();
+	//$('.listingRow .nolisting').hide();
 	
 }
 
@@ -288,7 +288,7 @@ function getNextComments() {
 	var nextLink = null;
 	$('a.gwt-Anchor:visible').each(function(){
 		if (this.style.visibility != 'hidden') {	// なぜか上の:visibleが効かない...
-			if ($(this).text().match(/Next/)) {
+			if ($(this).text().match(/次へ/)) {
 				nextLink = this;
 			} 
 		}
