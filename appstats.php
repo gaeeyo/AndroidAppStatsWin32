@@ -33,6 +33,7 @@ function getStats($email, $pass) {
 		
 		if (strpos($url,MAIN_URL) === 0) {
 			if ($mainCount++ == 0) {
+			  bugfix20110117($ie);
 			  insertScript($ie);
 			  continue;
 			}
@@ -45,6 +46,25 @@ function getStats($email, $pass) {
 	}
 	$ie->Quit();
 	return $apps;
+}
+
+// IEでDeveloper Consoleにアクセスするすスクリプトエラーが出て
+// 処理が続行できない問題に無理やり対処
+function bugfix20110117($ie) {
+  $script = <<<SCRIPT
+var a = document.getElementsByTagName('a');
+for (var j=0; j<a.length; j++) {
+    if (a[j].href.indexOf('ViewCommentPlace') != -1) {
+        a[j].click();
+        break;
+    }
+}
+window.history.back();
+SCRIPT;
+
+  sleep(5);
+  $ie->Navigate("javascript:".$script);
+  sleep(5);
 }
 
 // オブジェクトを普通の配列に変換

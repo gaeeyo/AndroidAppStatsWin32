@@ -171,15 +171,15 @@ if (typeof(_console) == 'undefined') {
 }
 
 window.apps = null;
-var SELECTOR_APP_BOX = '.GFW0W1RBOJ:first';
-var SELECTOR_COMMENTS = '.GFW0W1RBNJ > div';
+var SELECTOR_APP_BOX = '.GOM05DHML:first';
+var SELECTOR_COMMENTS = '.GOM05DHLL > div';
 function stats() {
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
 	$('.listingRow:visible').each(function(){
 		var app = {};
-		var a = $(this).find('a[href*=#EDIT_APPLICATION]');
-		app.packageName = a.attr('href').match(/pkg=(.*)/)[1];
+		var a = $(this).find('a[href*=#AppEditorPlace]');
+		app.packageName = a.attr('href').match(/p=(.*)/)[1];
 		app.title = a.text();
 
 		var text = $(this).text();
@@ -191,7 +191,7 @@ function stats() {
 
 		apps.push(app);
 	});
-
+	
 	if (apps.length == 0) {
 		_console.info('retry');
 		window.setTimeout(stats, 250);
@@ -208,13 +208,14 @@ function stats() {
 			window.apps = apps;
 			return;	// 終了
 		}
-		
+
+		_console.info('step:'+step);		
 		switch (step) {
 		case 0:
 			app = apps[cursor];
 			app.comments = [];
 			commentPage = 0;
-			window.location.href = '#COMMENTS?pkg=' + app.packageName;
+			window.location.href = '#ViewCommentPlace:p=' + app.packageName;
 			step++;
 			break;
 		case 1:
