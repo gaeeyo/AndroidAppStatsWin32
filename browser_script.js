@@ -1,5 +1,6 @@
 
 var COMMENT_PAGE_MAX = 3;
+var DEBUG = 0;
 
 
 /*
@@ -171,8 +172,9 @@ if (typeof(_console) == 'undefined') {
 }
 
 window.apps = null;
-var SELECTOR_APP_BOX = '.GOM05DHML:first';
-var SELECTOR_COMMENTS = '.GOM05DHLL > div';
+var SELECTOR_APP_BOX = '#app > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:first';
+var SELECTOR_COMMENTS = '#app > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div > div';
+
 function stats() {
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
@@ -224,6 +226,7 @@ function stats() {
 		
 			if (app.icon != icon) break;
 			if (!isCommentsLoaded()) break;
+
 			
 			getComments(app.comments);
 			if (++commentPage < COMMENT_PAGE_MAX) {	// 最大3ページ分のコメントをとってくる
@@ -240,7 +243,8 @@ function stats() {
 			app.version = text.match(/VersionName:\s*(\S+)/)[1];
 			app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
 			text = text.replace(/ +/g, ' ');
-			var m = text.match(/5 つ星(\d+)4 つ星(\d+)3 つ星(\d+)2 つ星(\d+)1 つ星(\d+)/);
+			var m = text.match(/5 .*?(\d+)4 .*?(\d+)3 .*?(\d+)2 .*?(\d+)1 .*?(\d+)/);
+			if (DEBUG && m == null) alert("★が取れない\n"+text);
 			app.stars = [m[5], m[4], m[3], m[2], m[1]];
     
 			step = 0;
@@ -265,6 +269,7 @@ function getComments(comments) {
 		};
 		var text = $('span',this).text();
 		var m = text.match(/投稿者: (.*)（(.+?)\）/);
+		if (DEBUG && m == null) alert('投稿者が取れない');
 		comment.name = m[1];
 		comment.date = m[2];
 
@@ -304,6 +309,10 @@ function getNextComments() {
 
 // コメントの読み込みが完了しているかどうかを返す
 function isCommentsLoaded() {
+	if ($('.inlineSpinner:visible').length > 0) {
+		return false;
+	}
+
 	if ($('.listingRow .nolisting:visible').length == 1 ||
 		$(SELECTOR_COMMENTS+':visible').length >= 1) {
 		_console.info('comments loaded.');

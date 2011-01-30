@@ -4,7 +4,7 @@ define('MAIN_URL', 'http://market.android.com/publish/Home');
 define('LOGIN_URL', 'https://www.google.com/accounts/ServiceLogin');
 
 // ブラウザに送り込むスクリプト
-// define('INSERT_SCRIPT_PATH', 'browser_script.js');
+//define('INSERT_SCRIPT_PATH', 'browser_script.js');
 
 // ブラウザに送り込むスクリプトを常にGitHubから取得する
 define('INSERT_SCRIPT_PATH', 'http://github.com/gaeeyo/AndroidAppStatsWin32/raw/master/browser_script.js');
@@ -33,7 +33,7 @@ function getStats($email, $pass) {
 		
 		if (strpos($url,MAIN_URL) === 0) {
 			if ($mainCount++ == 0) {
-			  bugfix20110117($ie);
+			  // bugfix20110117($ie); // 2011-01-30 スクリプトエラーが出る問題が解決していたので解除
 			  insertScript($ie);
 			  continue;
 			}
