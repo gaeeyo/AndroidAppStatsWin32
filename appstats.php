@@ -38,11 +38,11 @@ function getStats($email, $pass) {
 			  continue;
 			}
 		}
-
-		if ($mainCount >0 && $ie->Document->Script->apps != null) {
-			$apps = convertApps($ie->Document->Script->apps);
-			break;
-		}
+    if (isset($ie->Document->getElementById('appstats_result')->innerHTML)) {
+      $json = $ie->Document->getElementById('appstats_result')->value;
+      $apps = convertApps(json_decode($json, true));
+      break;
+    }
 	}
 	$ie->Quit();
 	return $apps;
@@ -67,40 +67,20 @@ SCRIPT;
   sleep(5);
 }
 
-// オブジェクトを普通の配列に変換
 function convertApps($apps) {
-  $r = array();
-  foreach ($apps as $app) {
-    $stars = array();
-    foreach ($app->stars as $s) $stars []= $s;
-    
-    $comments = array();
-    foreach ($app->comments as $c) {
-      $comments []= array(
-        'body' => $c->body,
-        'name' => $c->name,
-        'date' => convertCommentTime($c->date),
-        'star' => $c->star
-      );
+  foreach ($apps as &$app) {
+    foreach ($app['comments'] as &$c) {
+      $c['date'] = convertCommentTime($c['date']);
     }
-  
-    $r []= array(
-      'active' => $app->active,
-      'total' => $app->total,
-      'packageName' => $app->packageName,
-      'stars' => $stars,
-      'versionCode' => $app->versionCode,
-      'version' => $app->version,
-      'comments' => $comments
-    );
   }
-  return $r;
+  return $apps;
 }
 
 function convertCommentTime($time) {
   $r = strtotime($time);
   if ($r == false) {
     $time = preg_replace('/(\d+)年(\d+)月(\d+)日/u', '$1-$2-$3', $time);
+    print_r($time);
     $r = strtotime($time);
     if ($r == false) {
       return $time;
