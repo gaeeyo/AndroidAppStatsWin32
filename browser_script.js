@@ -160,6 +160,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 
 // '
 
+
 $=jQuery;
 if (typeof(_console) == 'undefined') {
 	if (typeof(console) != 'undefined') {
@@ -181,6 +182,9 @@ function stats() {
 	$('.listingRow:visible').each(function(){
 		var app = {};
 		var a = $(this).find('a[href*=#AppEditorPlace]');
+		if (a.length == 0) {
+			return;
+		}
 		app.packageName = a.attr('href').match(/p=(.*)/)[1];
 		app.title = a.text();
 
@@ -208,6 +212,10 @@ function stats() {
 		if (cursor >= apps.length) {
 			_console.info('finished');
 			window.apps = apps;
+			var elm = document.createElement('textarea');
+			elm.id = 'appstats_result';
+			elm.value = JSON.stringify(apps);
+			document.body.appendChild(elm);
 			return;	// 終了
 		}
 
