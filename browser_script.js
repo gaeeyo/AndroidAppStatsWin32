@@ -181,17 +181,16 @@ function stats() {
 	// 最初の画面で、packageName, title, total, active, icon を取得
 	$('.listingRow:visible').each(function(){
 		var app = {};
-		var a = $(this).find('a[href*=#AppEditorPlace]');
+		var a = $(this).find('a[href*=#ViewCommentPlace]');
 		if (a.length == 0) {
 			return;
 		}
 		app.packageName = a.attr('href').match(/p=(.*)/)[1];
-		app.title = a.text();
 
 		var text = $(this).text();
 		_console.info(text);
-		app.total = text.match(/合計.*?(\d+)\s*/)[1];
-		app.active = text.match(/インストール数.*?(\d+)/)[1];
+		app.total = text.match(/全ダウンロード数.*?(\d+)\s*/)[1];
+		app.active = text.match(/(\d+) active/)[1];
 		
 		app.icon = $(this).find('img')[0].src;
 
