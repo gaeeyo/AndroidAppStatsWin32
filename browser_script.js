@@ -248,8 +248,11 @@ function stats() {
 			text = text.replace(/(\d) stars/ig, '$1 stars ');
 			
 			app.version = text.match(/VersionName:\s*(\S+)/)[1];
-			app.versionCode = text.match(/VersionCode:\s*(\d+)/)[1];
-			text = text.replace(/ +/g, ' ');
+
+			var blocks = text.match(/VersionCode:\s*(\d+)(.*)/);
+			app.versionCode = blocks[1];
+			text = blocks[2].replace(/ +/g, ' ');
+			
 			var m = text.match(/5 .*?(\d+)4 .*?(\d+)3 .*?(\d+)2 .*?(\d+)1 .*?(\d+)/);
 			if (DEBUG && m == null) alert("★が取れない\n"+text);
 			app.stars = [m[5], m[4], m[3], m[2], m[1]];
