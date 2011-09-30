@@ -1,7 +1,7 @@
 <?php
 
 define('MAIN_URL', 'https://market.android.com/publish/Home');
-define('LOGIN_URL', 'https://www.google.com/accounts/ServiceLogin');
+define('LOGIN_URL', 'https://accounts.google.com/ServiceLogin');
 
 // ブラウザに送り込むスクリプト
 //define('INSERT_SCRIPT_PATH', 'browser_script.js');

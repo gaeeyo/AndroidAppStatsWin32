@@ -189,8 +189,8 @@ function stats() {
 
 		var text = $(this).text();
 		_console.info(text);
-		app.total = text.match(/合計インストール数.*?(\d+)/)[1];
-		app.active = text.match(/有効なインストール数.*?(\d+)/)[1];
+		app.total = text.match(/(\d+) total installs/)[1];
+		app.active = text.match(/(\d+) active installs/)[1];
 		
 		app.icon = $(this).find('img')[0].src;
 
