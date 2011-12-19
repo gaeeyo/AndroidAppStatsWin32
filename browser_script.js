@@ -195,6 +195,7 @@ function stats() {
 				)[1].replace(',','');
 		app.active = (
 					text.match(/([0-9,]+) active installs/) ||
+					text.match(/([0-9,]+) net installs/) ||
 					text.match(/有効な.*?([0-9,]+)/)
 				)[1].replace(',','');
 		
