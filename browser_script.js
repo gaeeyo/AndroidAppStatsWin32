@@ -196,6 +196,7 @@ function stats() {
 		app.active = (
 					text.match(/([0-9,]+) active installs/) ||
 					text.match(/([0-9,]+) net installs/) ||
+					text.match(/([0-9,]+) 総インストール数/) ||
 					text.match(/有効な.*?([0-9,]+)/)
 				)[1].replace(',','');
 		
@@ -286,7 +287,8 @@ function getComments(comments) {
 		};
 		var text = $('span',this).text();
 		var m = text.match(/投稿者: (.*)（(.+?)\）/);
-		if (DEBUG && m == null) alert('投稿者が取れない');
+		if (m == null) m = text.match(/\u00a0+(.*)、(.+?)（/);
+		if (DEBUG && m == null) alert('投稿者が取れない ' + text);
 		comment.name = m[1];
 		comment.date = m[2];
 
