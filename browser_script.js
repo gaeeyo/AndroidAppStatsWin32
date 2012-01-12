@@ -269,9 +269,9 @@ function stats() {
 			cursor++;
 			break;
 		}
-		window.setTimeout(loop, 100);
+		window.setTimeout(loop, 1000);
 	}
-	window.setTimeout(loop, 250);
+	window.setTimeout(loop, 1000);
 }
 
 // 続きがあるときは true を返す
