@@ -288,6 +288,7 @@ function getComments(comments) {
 		var text = $('span',this).text();
 		var m = text.match(/投稿者: (.*)（(.+?)\）/);
 		if (m == null) m = text.match(/\u00a0+(.*)、(.+?)（/);
+		if (m == null) m = text.match(/\u00a0+(.*) さん.*?(\d+年\d+月\d+日)/);
 		if (DEBUG && m == null) alert('投稿者が取れない ' + text);
 		comment.name = m[1];
 		comment.date = m[2];
