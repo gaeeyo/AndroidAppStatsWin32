@@ -190,10 +190,12 @@ function stats() {
 		var text = $(this).text();
 		_console.info(text);
 		app.total = (
+					text.match(/総インストール数.*?([0-9,]+)/) ||
 					text.match(/([0-9,]+) total installs/) || 
 					text.match(/合計.*?([0-9,]+)/)
 				)[1].replace(',','');
 		app.active = (
+					text.match(/正味インストール数.*?([0-9,]+)/) ||
 					text.match(/([0-9,]+) active installs/) ||
 					text.match(/([0-9,]+) net installs/) ||
 					text.match(/([0-9,]+) 総インストール数/) ||
