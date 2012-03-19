@@ -1,7 +1,6 @@
 
-var COMMENT_PAGE_MAX = 3;
+var COMMENT_PAGE_MAX = 2;
 var DEBUG = 0;
-
 
 /*
  * jQuery JavaScript Library v1.4.2
@@ -162,21 +161,23 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
 
 
 $=jQuery;
-if (typeof(_console) == 'undefined') {
-	if (typeof(console) != 'undefined') {
-		_console = console;
-	} else {
-		_console = {
-			info: function (e) {}
-		};
-	}
-}
+_console = console;
+//if (typeof(_console) == 'undefined') {
+//	if (typeof(console) != 'undefined') {
+//		_console = console;
+//	} else {
+//		_console = {
+//			info: function (e) {}
+//		};
+//	}
+//}
 
 window.apps = null;
 var SELECTOR_APP_BOX = '#app > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:first';
 var SELECTOR_COMMENTS = '#app > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div:last > div > div';
 
 function stats() {
+	_console.info('start');
 	var apps = [];
 	// 最初の画面で、packageName, title, total, active, icon を取得
 	$('.listingRow:visible').each(function(){
@@ -195,7 +196,7 @@ function stats() {
 					text.match(/合計.*?([0-9,]+)/)
 				)[1].replace(',','');
 		app.active = (
-					text.match(/正味インストール数.*?([0-9,]+)/) ||
+					text.match(/(?:正味|有効)インストール数.*?([0-9,]+)/) ||
 					text.match(/([0-9,]+) active installs/) ||
 					text.match(/([0-9,]+) net installs/) ||
 					text.match(/([0-9,]+) 総インストール数/) ||
@@ -209,7 +210,7 @@ function stats() {
 	
 	if (apps.length == 0) {
 		_console.info('retry');
-		window.setTimeout(stats, 250);
+		window.setTimeout(stats, 2000);
 		return;
 	}
 
@@ -246,7 +247,7 @@ function stats() {
 
 			
 			getComments(app.comments);
-			if (++commentPage < COMMENT_PAGE_MAX) {	// 最大3ページ分のコメントをとってくる
+			if (++commentPage < COMMENT_PAGE_MAX) {	// 最大COMMENT_PAGE_MAXページ分のコメントをとってくる
 				if (getNextComments()) {	// 次のページがあればtrue
 					break;
 				}
@@ -257,10 +258,11 @@ function stats() {
 			text = text.replace('VersionCode', ' VersionCode');
 			text = text.replace(/(\d) stars/ig, '$1 stars ');
 			
-			app.version = text.match(/VersionName:\s*(\S+)/)[1];
+			app.version = text.match(/VersionName:\s*(\S+)/i)[1];
 
-			var blocks = text.match(/VersionCode:\s*(\d+)(.*)/);
+			var blocks = text.match(/VersionCode:\s*(\d+)(.*)/i);
 			app.versionCode = blocks[1];
+			//_console.info('version:'+app.versionCode);
 			text = blocks[2].replace(/ +/g, ' ');
 			
 			var m = text.match(/5 .*?(\d+)4 .*?(\d+)3 .*?(\d+)2 .*?(\d+)1 .*?(\d+)/);
@@ -271,7 +273,7 @@ function stats() {
 			cursor++;
 			break;
 		}
-		window.setTimeout(loop, 1000);
+		window.setTimeout(loop, 2000);
 	}
 	window.setTimeout(loop, 1000);
 }
@@ -331,17 +333,20 @@ function getNextComments() {
 
 // コメントの読み込みが完了しているかどうかを返す
 function isCommentsLoaded() {
-	if ($('.inlineSpinner:visible').length > 0) {
+//	if ($('.inlineSpinner:visible').length > 0) {
+//		return false;
+//	}
+	if ($('img[src*=spin_]:visible').length > 0) {
 		return false;
 	}
-
-	if ($('.listingRow .nolisting:visible').length == 1 ||
-		$(SELECTOR_COMMENTS+':visible').length >= 1) {
-		_console.info('comments loaded.');
-		return true;
-	}
-	_console.info('comments loading...');
-	return false;
+	return true;
+//	if ($('.listingRow .nolisting:visible').length == 1 ||
+//		$(SELECTOR_COMMENTS+':visible').length >= 1) {
+//		_console.info('comments loaded.');
+//		return true;
+//	}
+//	_console.info('comments loading...');
+//	return false;
 }
 
 stats();
